@@ -136,10 +136,12 @@ public class Fixer {
             String oldFilePath = kamiliaDirectory + "/Data/backup/" + fileName;
             byte[] newFileBytes = Files.readAllBytes(Paths.get(newFilePath));
             byte[] oldFileBytes = Files.readAllBytes(Paths.get(oldFilePath));
-            oldFileBytes[0] = newFileBytes[0];
-            oldFileBytes[1] = newFileBytes[1];
-            oldFileBytes[2] = newFileBytes[2];
-            oldFileBytes[3] = newFileBytes[3];
+            if(fileName.equals("saveData") || fileName.equals("saveData2") || fileName.equals("DeathTime")){
+                oldFileBytes[0] = newFileBytes[0];
+                oldFileBytes[1] = newFileBytes[1];
+                oldFileBytes[2] = newFileBytes[2];
+                oldFileBytes[3] = newFileBytes[3];
+            }
 
             if(new File(newFilePath).delete()){
                 System.out.println("New file delete success ");
@@ -161,8 +163,6 @@ public class Fixer {
                     System.out.println(e.getMessage());
                 }
             }
-
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
