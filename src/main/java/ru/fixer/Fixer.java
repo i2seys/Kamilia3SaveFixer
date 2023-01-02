@@ -34,6 +34,9 @@ public class Fixer {
     private static final String ANSI_PURPLE = "\u001B[35m";
     private static final String ANSI_CYAN = "\u001B[36m";
     private static final String ANSI_WHITE = "\u001B[37m";
+    private static String BACKUP_PATH = null;
+    private static String KAMILIA_PATH = null;
+    private static String DATA_PATH = null;
     private static final String START_MESSAGE = String.format("""
             %sBefore starting the program, your save files %s(DeathTime, saveData, saveData2 (if it exists), Config, Snapshot)
             %swill be moved to the %sbackup %sfolder and will not be changed.
@@ -42,10 +45,6 @@ public class Fixer {
             """, ANSI_PURPLE, ANSI_CYAN, ANSI_PURPLE, ANSI_CYAN, ANSI_PURPLE, ANSI_GREEN, ANSI_PURPLE, ANSI_RED, ANSI_PURPLE);
 
     public static void main(String[] args) {
-        //1) после помещения jar в папку с игрой, пользователь должен его открыть.
-        //   Выводится приветствие и начальные слова (ПРогресс не будет утерян, всё будет лежать в папке backup).
-        //   Предлагается написать Yes, если пользователь хочет начать.
-
         //также надо проверить папку на корректность
         //////////////////////////////////////////////
 
@@ -78,16 +77,21 @@ public class Fixer {
         File kamiliaDirectory = null;
         // после ввода  yes Создастся папка backup, в которую перенесутся все сейв файлы и картинка
         try {
-            String path = reader.readLine();
-            kamiliaDirectory = new File(path);
+            KAMILIA_PATH = reader.readLine();
+            kamiliaDirectory = new File(KAMILIA_PATH);
+            KAMILIA_PATH = kamiliaDirectory.getAbsolutePath();
+
+            BACKUP_PATH = KAMILIA_PATH + "/Data/backup";
+            DATA_PATH = KAMILIA_PATH + "/Data";
+
 
             if(kamiliaDirectory.isDirectory()){
-                File backupDirectory = new File(path + "/Data/backup");
+                File backupDirectory = new File(BACKUP_PATH);
                 if(backupDirectory.mkdir()){
                     System.out.println("Backup directory is created");
 
                     //перекидываем файлы DeathTime, saveData, saveData2 (if it exists), Config, Snapshot в бэкап
-                    moveKamiliaFiles(kamiliaDirectory.getAbsolutePath());
+                    moveKamiliaFilesInBackup();
                 }
                 else{
                     System.out.println("Backup directory cant be created");
@@ -114,26 +118,31 @@ public class Fixer {
 
         // в каждом старом файле надо поменять первые 4 байта на 4 новые байта
         // после этого надо удалить НОВЫЕ сейвы и на их место переместить СТАРЫЕ
-        fixOldFiles(kamiliaDirectory.getAbsolutePath());
+        fixOldFiles();
 
+        try {
+            reader.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
-    private static void fixOldFiles(String kamiliaDirectory){
+    private static void fixOldFiles(){
         //byte[] array = Files.readAllBytes(Paths.get(fileName));
-        fixOneFile(kamiliaDirectory, "saveData");
-        fixOneFile(kamiliaDirectory, "saveData2");
-        fixOneFile(kamiliaDirectory, "Config");
-        fixOneFile(kamiliaDirectory, "DeathTime");
-        fixOneFile(kamiliaDirectory, "Snapshot.bmp");
+        fixOneFile("saveData");
+        fixOneFile( "saveData2");
+        fixOneFile("Config");
+        fixOneFile("DeathTime");
+        fixOneFile( "Snapshot.bmp");
     }
-    private static void fixOneFile(String kamiliaDirectory, String fileName){
+    private static void fixOneFile(String fileName){
         //1)считать данные из старого файла по байтам (старый файл в бекапе (/Data/backup))
         //2)считать первые 4 байта из нового файла (новый файл в /Data)
         //3)в строке с данными из старого файла заменить первые 4 байта на новые
         //4)удалить новый файл и на его место поставить файл из байтов, полученных в пункте 3
 
         try {
-            String newFilePath  = kamiliaDirectory + "/Data/" + fileName;
-            String oldFilePath = kamiliaDirectory + "/Data/backup/" + fileName;
+            String newFilePath  = DATA_PATH + "/" + fileName;
+            String oldFilePath = BACKUP_PATH + "/" + fileName;
             byte[] newFileBytes = Files.readAllBytes(Paths.get(newFilePath));
             byte[] oldFileBytes = Files.readAllBytes(Paths.get(oldFilePath));
             if(fileName.equals("saveData") || fileName.equals("saveData2") || fileName.equals("DeathTime")){
@@ -167,20 +176,20 @@ public class Fixer {
             throw new RuntimeException(e);
         }
     }
-    private static void moveKamiliaFiles(String kamiliaPath){
+    private static void moveKamiliaFilesInBackup(){
         //перекидываем файлы DeathTime, saveData, saveData2 (if it exists), Config, Snapshot в бэкап
-        Path dataPath = Paths.get(kamiliaPath + "/Data");
-        Path backupPath = Paths.get(kamiliaPath + "/Data/backup");
-        moveFile(dataPath + "/DeathTime", backupPath + "/DeathTime");
-        moveFile(dataPath + "/saveData", backupPath + "/saveData");
-        moveFile(dataPath + "/saveData2", backupPath + "/saveData2");
-        moveFile(dataPath + "/Config", backupPath + "/Config");
-        moveFile(dataPath + "/Snapshot.bmp", backupPath + "/Snapshot.bmp");
+        moveFileToBackup("DeathTime");
+        moveFileToBackup("saveData");
+        moveFileToBackup("saveData2");
+        moveFileToBackup("Config");
+        moveFileToBackup("Snapshot.bmp");
     }
-    private static void moveFile(String src, String dest) {
+    private static void moveFileToBackup(String fileName) {
         Path result = null;
+        String from = DATA_PATH + "/" + fileName;
+        String to = BACKUP_PATH + "/" + fileName;
         try {
-            result =  Files.move(Paths.get(src), Paths.get(dest));
+            result =  Files.move(Paths.get(from), Paths.get(to));
         } catch (IOException e) {
             System.out.println("Exception while moving file: " + e.getMessage());
         }
