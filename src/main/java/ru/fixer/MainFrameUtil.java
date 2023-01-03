@@ -26,10 +26,16 @@ public class MainFrameUtil {
     public Border getStepBorder(Step step){
         String title;
         switch (step){
-            case FIRST -> title = "Step 1/3 - prepare directory.";
-            case SECOND -> title = "Step 2/3 - create empty saves.";
-            case THIRD -> title = "Step 3/3 - fix saves.";
-            default -> throw new RuntimeException();
+            case FIRST:
+                title = "Step 1/3 - prepare directory.";
+                break;
+            case SECOND:
+                title = "Step 2/3 - create empty saves.";
+                break;
+            case THIRD:
+                title = "Step 3/3 - fix saves.";
+                break;
+            default: throw new RuntimeException();
         }
         return BorderFactory.createTitledBorder(title);
     }
@@ -51,7 +57,7 @@ public class MainFrameUtil {
                 initString = new String[]{
                         "Your incorrect saves have been moved to the \"Data\\backup(time)\" folder. ",
                         "Now you need to enter the game, click \"Start game\" and exit the game. ",
-                        "When you do, click \"Continue\"."
+                        "When you do, click \"Fix\"."
                 };
                 break;
             case THIRD:
@@ -91,38 +97,38 @@ public class MainFrameUtil {
         c.gridwidth = 1;
         c.insets = inset;
         switch (componentName) {
-            case KAMILIA_DIRECTORY_CHOOSE_BTN -> {
+            case KAMILIA_DIRECTORY_CHOOSE_BTN:
                 c.gridx = 0;
                 c.gridy = 0;
                 c.anchor = GridBagConstraints.FIRST_LINE_START;
-            }
-            case KAMILIA_DIRECTORY_CHOOSE_LABEL -> {
+                break;
+            case KAMILIA_DIRECTORY_CHOOSE_LABEL:
                 c.gridx = 1;
                 c.gridy = 0;
                 c.anchor = GridBagConstraints.PAGE_START;
-            }
-            case FIX_BUTTON -> {
+                break;
+            case FIX_BUTTON:
                 c.gridx = 0;
                 c.gridy = 1;
                 c.anchor = GridBagConstraints.LINE_START;
-            }
-            case FIX_LABEL -> {
+                break;
+            case FIX_LABEL:
                 c.gridx = 1;
                 c.gridy = 1;
                 c.anchor = GridBagConstraints.CENTER;
-            }
-            case EXIT_BUTTON -> {
+                break;
+            case EXIT_BUTTON:
                 c.gridx = 0;
                 c.gridy = 2;
                 c.anchor = GridBagConstraints.LAST_LINE_START;
-            }
-            case TEMP_LABEL -> {
+                break;
+            case TEMP_LABEL:
                 c.gridx = 1;
                 c.gridy = 2;
                 c.anchor = GridBagConstraints.PAGE_END;
-                c.insets = new Insets(15, 0, 30, 0);
-            }
-            default -> throw new RuntimeException();
+                c.insets = new Insets(0, 0, 45, 0);
+                break;
+            default: throw new RuntimeException();
         }
         return c;
     }

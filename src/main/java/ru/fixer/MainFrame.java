@@ -73,7 +73,6 @@ public class MainFrame extends JFrame {
                     return;
                 }
 
-
                 //show new button
                 kamiliaDirectoryChooseLabel.setIcon(checkmark);
                 fixButton.setVisible(true);

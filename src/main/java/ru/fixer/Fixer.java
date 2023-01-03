@@ -119,11 +119,6 @@ public class Fixer {
         return true;
     }
     private boolean fixAndMoveOneFile(String fileName){
-        //1)считать данные из старого файла по байтам (старый файл в бекапе (/Data/backup))
-        //2)считать первые 4 байта из нового файла (новый файл в /Data)
-        //3)в строке с данными из старого файла заменить первые 4 байта на новые
-        //4)удалить новый файл и на его место поставить файл из байтов, полученных в пункте 3
-
         try {
             String newFilePath  = dataPath + "\\" + fileName;
             String oldFilePath = backupPath + "\\" + fileName;
