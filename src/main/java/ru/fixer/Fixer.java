@@ -55,41 +55,70 @@ public class Fixer {
             return false;
         }
     }
-    public static void main(String[] args) {
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-
-
-        // далее прога скажет, что надо зайти в игру, дойти до первого сейва и сохраниться
-         try{
-            while(true) {
-                String readedLine = reader.readLine().toLowerCase().strip();
-                if(readedLine.equals("continue")){
-                    break;
-                }
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public boolean newFilesExist(JFrame frame){
+        //files must exist:
+        //saveData
+        //DeathTime
+        //saveData2
+        if(!new File(dataPath + "\\saveData").exists()){
+            JOptionPane.showMessageDialog(frame,
+                    "Error: new \"saveData\" file doesn't exist.",
+                    "File error",
+                    JOptionPane.ERROR_MESSAGE);
+            return false;
         }
-
-        // в каждом старом файле надо поменять первые 4 байта на 4 новые байта
-        // после этого надо удалить НОВЫЕ сейвы и на их место переместить СТАРЫЕ
-       ///////////////////////////////////////////////////////////////////////////fixOldFiles();
-
-        try {
-            reader.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if(!new File(dataPath + "\\saveData2").exists()){
+            JOptionPane.showMessageDialog(frame,
+                    "Error: new \"saveData2\" file doesn't exist.",
+                    "File error",
+                    JOptionPane.ERROR_MESSAGE);
+            return false;
         }
+        if(!new File(dataPath + "\\DeathTime").exists()){
+            JOptionPane.showMessageDialog(frame,
+                    "Error: new \"DeathTime\" file doesn't exist.",
+                    "File error",
+                    JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
     }
-    private void fixOldFiles(){
-        fixOneFile("saveData");
-        fixOneFile( "saveData2");
-        fixOneFile("Config");
-        fixOneFile("DeathTime");
-        fixOneFile( "Snapshot.bmp");
+    public boolean fixAndMoveOldFiles(JFrame frame){
+        if(!fixAndMoveOneFile("saveData")){
+            JOptionPane.showMessageDialog(frame,
+                    "Error: can't fix file \"saveData\".",
+                    "File fix error",
+                    JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        if(!fixAndMoveOneFile("DeathTime")){
+            JOptionPane.showMessageDialog(frame,
+                    "Error: can't fix file \"DeathTime\".",
+                    "File fix error",
+                    JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        if(!fixAndMoveOneFile("saveData2")){
+            JOptionPane.showMessageDialog(frame,
+                    "Warning: can't fix file \"saveData2\".",
+                    "File fix warning",
+                    JOptionPane.WARNING_MESSAGE);
+        }
+        if(!fixAndMoveOneFile("Config")){
+            JOptionPane.showMessageDialog(frame,
+                    "Warning: can't fix file \"Config\".",
+                    "File fix warning",
+                    JOptionPane.WARNING_MESSAGE);
+        }
+        if(!fixAndMoveOneFile("Snapshot.bmp")){
+            JOptionPane.showMessageDialog(frame,
+                    "Warning: can't fix file \"Snapshot.bmp\".",
+                    "File fix warning",
+                    JOptionPane.WARNING_MESSAGE);
+        }
+        return true;
     }
-    private void fixOneFile(String fileName){
+    private boolean fixAndMoveOneFile(String fileName){
         //1)считать данные из старого файла по байтам (старый файл в бекапе (/Data/backup))
         //2)считать первые 4 байта из нового файла (новый файл в /Data)
         //3)в строке с данными из старого файла заменить первые 4 байта на новые
@@ -98,24 +127,23 @@ public class Fixer {
         try {
             String newFilePath  = dataPath + "\\" + fileName;
             String oldFilePath = backupPath + "\\" + fileName;
-            byte[] newFileBytes = Files.readAllBytes(Paths.get(newFilePath));
             byte[] oldFileBytes = Files.readAllBytes(Paths.get(oldFilePath));
             if(fileName.equals("saveData") || fileName.equals("saveData2") || fileName.equals("DeathTime")){
+                //replace only frist 4 bytes in saveData2/saveData/DeathTime
+                byte[] newFileBytes = Files.readAllBytes(Paths.get(newFilePath));
                 oldFileBytes[0] = newFileBytes[0];
                 oldFileBytes[1] = newFileBytes[1];
                 oldFileBytes[2] = newFileBytes[2];
                 oldFileBytes[3] = newFileBytes[3];
             }
 
-            if(new File(newFilePath).delete()){
-                System.out.println("New file delete success ");
-            }
-            else{
-                System.out.println("Delete error");
-                throw new RuntimeException();
+            //delete new (with no progress) file with correct first 4 bytes (not old)
+            if(!new File(newFilePath).delete()){
+                //log "Cant delete new empty files"
+                return false;
             }
 
-            //создаём готовый файл с заменёнными байтами
+            //create new correct file
             File newFile = new File(newFilePath);
             if(newFile.createNewFile()){
                 try(FileOutputStream writer = new FileOutputStream(newFilePath, false))
@@ -124,12 +152,13 @@ public class Fixer {
                     writer.write(oldFileBytes);
                 }
                 catch(IOException e){
-                    System.out.println(e.getMessage());
+                    return false;
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            return false;
         }
+        return true;
     }
     public boolean moveKamiliaFilesInBackup(JFrame frame){
         //check DeathTime and saveData existence

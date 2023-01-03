@@ -2,10 +2,8 @@ package ru.fixer;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.Objects;
 
 public class MainFrame extends JFrame {
     public static final Integer WINDOW_HEIGHT = 440;
@@ -19,9 +17,10 @@ public class MainFrame extends JFrame {
     private JButton exitButton;
     private final Icon cross = new ImageIcon("png/crosspng.png");
     private final Icon checkmark = new ImageIcon("png/checkmarkpng.png");
+    private final Image iconImage = new ImageIcon("png/kamiliaKey.png").getImage();
     private final MainFrameUtil mainFrameUtil = new MainFrameUtil();
     private Fixer fixer;
-    private final String baseDirectory = "C:\\Users\\ilyas\\OneDrive\\Рабочий стол\\I Wanna Kill the Kamilia 3 EZ"; //"C:\\"
+    private final String baseDirectory = "C:\\";
 
     public MainFrame(){
         Toolkit tk = Toolkit.getDefaultToolkit();
@@ -58,7 +57,7 @@ public class MainFrame extends JFrame {
 
                 //init fixer class
                 String kamiliaPath = kamiliaDir.getAbsolutePath();
-                Fixer fixer = new Fixer(kamiliaPath);
+                fixer = new Fixer(kamiliaPath);
 
                 //create directory
                 if(!fixer.createBackupDirectory()){
@@ -107,6 +106,13 @@ public class MainFrame extends JFrame {
         constr = mainFrameUtil.getGridBagConstrains(MainFrameUtil.ComponentName.FIX_BUTTON);
         fixButton = new JButton("Fix");
         fixButton.addActionListener(e -> {
+            if(!fixer.newFilesExist(MainFrame.this)){
+                return;
+            }
+            if(!fixer.fixAndMoveOldFiles(MainFrame.this)){
+                return;
+            }
+
             fixLabel.setIcon(checkmark);
             exitButton.setVisible(true);
             textPanel.remove(0);
@@ -142,9 +148,11 @@ public class MainFrame extends JFrame {
                  UnsupportedLookAndFeelException e) {
             throw new RuntimeException(e);
         }
+
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("I wanna kill the Kamilia 3 Save Fixer");
+        setIconImage(iconImage);
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
     }
 
@@ -155,5 +163,7 @@ public class MainFrame extends JFrame {
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         setResizable(false);
     }
+
+
 }
 
