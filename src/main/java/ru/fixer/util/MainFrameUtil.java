@@ -7,6 +7,9 @@ import javax.swing.border.Border;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -66,7 +69,7 @@ public class MainFrameUtil {
                 initString = new String[]{
                         "Your incorrect saves have been moved to the \"Data\\backup(time)\" folder. ",
                         "Now you need to enter the game, click \"Start game\" and exit the game. ",
-                        "When you do, click \"Fix\"."
+                        "After that click \"Fix\"."
                 };
                 break;
             case THIRD:
@@ -149,11 +152,11 @@ public class MainFrameUtil {
     public JMenuBar createJMenuBar(JFrame frame){
         Icon gitImage =  new ImageIcon(ClassLoader.getSystemResource("png/gitIcon.png"));
         Icon readmeImage = new ImageIcon(ClassLoader.getSystemResource("png/readmeIcon.png"));
-
+        Icon exitImage = new ImageIcon(ClassLoader.getSystemResource("png/exitpng.png"));
         //create empty JMenuBar
         JMenuBar menuBar = new JMenuBar();
 
-        //create menu "about"
+        //create menu ""
         JMenu aboutMenu = new JMenu("About");
         JMenuItem githubRef = new JMenuItem("GitHub", gitImage);
         githubRef.addActionListener(e -> {
@@ -170,12 +173,39 @@ public class MainFrameUtil {
                         JOptionPane.WARNING_MESSAGE);
             }
         });
+
         aboutMenu.add(githubRef);
 
         //create menu "help"
         JMenu helpMenu = new JMenu("Help");
         JMenuItem readme = new JMenuItem("Readme", readmeImage);
+        readme.addActionListener(e -> {
+            //open README
+            File readmeFile = new File("README.txt");
+            if(!readmeFile.exists()){
+                log.info("Can't find README file.");
+                JOptionPane.showMessageDialog(frame,
+                        "Can't find README file.\nYou can find it on GitHub: \"github.com/i2seys/Kamilia3SaveFixer\"",
+                        "File not exist.",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+            Desktop desktop = Desktop.getDesktop();
+            try {
+                desktop.open(readmeFile);
+            } catch (IOException ex) {
+                log.info("Can't find README file.");
+                JOptionPane.showMessageDialog(frame,
+                        "Can't open README file.\nYou can find it in fixer folder or GitHub: \"github.com/i2seys/Kamilia3SaveFixer\"",
+                        "File not exist.",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
         helpMenu.add(readme);
+        JMenuItem exit = new JMenuItem("Exit", exitImage);
+        exit.addActionListener(e -> System.exit(0));
+        helpMenu.add(exit);
+
 
         menuBar.add(aboutMenu);
         menuBar.add(helpMenu);
