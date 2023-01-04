@@ -212,4 +212,11 @@ public class MainFrameUtil {
         return menuBar;
 
     }
+    public JPanel createTextPanel(){
+        JPanel textPanel = new JPanel();
+        textPanel.setPreferredSize(new Dimension(WINDOW_WIDTH * 9 / 10, WINDOW_HEIGHT * 9/ 20));
+        textPanel.add(getTextPane(MainFrameUtil.Step.FIRST));
+        textPanel.setBorder(getStepBorder(MainFrameUtil.Step.FIRST));
+        return textPanel;
+    }
 }

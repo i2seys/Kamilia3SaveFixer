@@ -39,16 +39,12 @@ public class MainFrame extends JFrame {
         setJMenuBar(menuBar);
 
         //create text panel
-        textPanel = new JPanel();
-        textPanel.setPreferredSize(new Dimension(WINDOW_WIDTH * 9 / 10, WINDOW_HEIGHT * 9/ 20));
-        textPanel.add(mainFrameUtil.getTextPane(MainFrameUtil.Step.FIRST));
-        textPanel.setBorder(mainFrameUtil.getStepBorder(MainFrameUtil.Step.FIRST));
+        textPanel = mainFrameUtil.createTextPanel();
         add(textPanel);
 
         //create buttons panel
         componentsPanel = new JPanel();
         componentsPanel.setLayout(new GridBagLayout());
-
         //create button for directory choosing
         GridBagConstraints constr = mainFrameUtil.getGridBagConstrains(MainFrameUtil.ComponentName.KAMILIA_DIRECTORY_CHOOSE_BTN);
         kamiliaDirectoryChooseBtn = new JButton("Choose Kamilia 3 directory");
@@ -109,12 +105,10 @@ public class MainFrame extends JFrame {
             }
         });
         componentsPanel.add(kamiliaDirectoryChooseBtn, constr);
-
         //add icon for kamiliaDirectoryChooseBtn
         constr = mainFrameUtil.getGridBagConstrains(MainFrameUtil.ComponentName.KAMILIA_DIRECTORY_CHOOSE_LABEL);
         kamiliaDirectoryChooseLabel = new JLabel(crossImage);
         componentsPanel.add(kamiliaDirectoryChooseLabel, constr);
-
         //create invisible fix button
         constr = mainFrameUtil.getGridBagConstrains(MainFrameUtil.ComponentName.FIX_BUTTON);
         fixButton = new JButton("Fix");
@@ -136,24 +130,19 @@ public class MainFrame extends JFrame {
         });
         fixButton.setVisible(false);
         componentsPanel.add(fixButton, constr);
-
         //create invisible fix label
         constr = mainFrameUtil.getGridBagConstrains(MainFrameUtil.ComponentName.FIX_LABEL);
         fixLabel = new JLabel(crossImage);
         fixLabel.setVisible(false);
         componentsPanel.add(fixLabel, constr);
-
         //create invisible exit button
         constr = mainFrameUtil.getGridBagConstrains(MainFrameUtil.ComponentName.EXIT_BUTTON);
         exitButton = new JButton("Exit");
         exitButton.addActionListener(e -> System.exit(0));
         exitButton.setVisible(false);
         componentsPanel.add(exitButton, constr);
-
         componentsPanel.setPreferredSize(new Dimension(WINDOW_WIDTH * 9 / 10, WINDOW_HEIGHT * 35 / 100));
         add(componentsPanel);
-
-
 
         setMainFrameBounds(tk);
     }
