@@ -1,4 +1,4 @@
-package ru.fixer;
+package ru.fixer.service;
 
 import javax.swing.*;
 import java.io.*;
@@ -7,8 +7,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Logger;
 
 public class Fixer {
+    private static Logger log = Logger.getLogger(Fixer.class.getName());
     private String backupPath = null;
     private String kamiliaPath = null;
     private String dataPath = null;
@@ -43,6 +45,7 @@ public class Fixer {
             return true;
         }
         else{
+            log.warning("Wrong Kamilia directory");
             return false;
         }
     }
@@ -52,6 +55,7 @@ public class Fixer {
             return true;
         }
         else{
+            log.severe("Can't create 'backup' directory.");
             return false;
         }
     }
@@ -62,23 +66,26 @@ public class Fixer {
         //saveData2
         if(!new File(dataPath + "\\saveData").exists()){
             JOptionPane.showMessageDialog(frame,
-                    "Error: new \"saveData\" file doesn't exist.",
+                    "Error: new \"saveData\" file doesn't exist. Check if the conditions written in the application are met.",
                     "File error",
                     JOptionPane.ERROR_MESSAGE);
+            log.severe("saveData doesn't exist.");
             return false;
         }
         if(!new File(dataPath + "\\saveData2").exists()){
             JOptionPane.showMessageDialog(frame,
-                    "Error: new \"saveData2\" file doesn't exist.",
+                    "Error: new \"saveData2\" file doesn't exist. Check if the conditions written in the application are met",
                     "File error",
                     JOptionPane.ERROR_MESSAGE);
+            log.severe("saveData2 doesn't exist.");
             return false;
         }
         if(!new File(dataPath + "\\DeathTime").exists()){
             JOptionPane.showMessageDialog(frame,
-                    "Error: new \"DeathTime\" file doesn't exist.",
+                    "Error: new \"DeathTime\" file doesn't exist. Check if the conditions written in the application are met",
                     "File error",
                     JOptionPane.ERROR_MESSAGE);
+            log.severe("DeathTime doesn't exist.");
             return false;
         }
         return true;
@@ -89,6 +96,7 @@ public class Fixer {
                     "Error: can't fix file \"saveData\".",
                     "File fix error",
                     JOptionPane.ERROR_MESSAGE);
+            log.severe("Can't fix saveData.");
             return false;
         }
         if(!fixAndMoveOneFile("DeathTime")){
@@ -96,6 +104,7 @@ public class Fixer {
                     "Error: can't fix file \"DeathTime\".",
                     "File fix error",
                     JOptionPane.ERROR_MESSAGE);
+            log.severe("Can't fix DeathTime.");
             return false;
         }
         if(!fixAndMoveOneFile("saveData2")){
@@ -103,18 +112,21 @@ public class Fixer {
                     "Warning: can't fix file \"saveData2\".",
                     "File fix warning",
                     JOptionPane.WARNING_MESSAGE);
+            log.warning("Can't fix saveData2.");
         }
         if(!fixAndMoveOneFile("Config")){
             JOptionPane.showMessageDialog(frame,
                     "Warning: can't fix file \"Config\".",
                     "File fix warning",
                     JOptionPane.WARNING_MESSAGE);
+            log.warning("Can't fix Config.");
         }
         if(!fixAndMoveOneFile("Snapshot.bmp")){
             JOptionPane.showMessageDialog(frame,
                     "Warning: can't fix file \"Snapshot.bmp\".",
                     "File fix warning",
                     JOptionPane.WARNING_MESSAGE);
+            log.warning("Can't fix Snapshot.");
         }
         return true;
     }
@@ -143,14 +155,15 @@ public class Fixer {
             if(newFile.createNewFile()){
                 try(FileOutputStream writer = new FileOutputStream(newFilePath, false))
                 {
-                    // запись всей строки
                     writer.write(oldFileBytes);
                 }
                 catch(IOException e){
+                    log.severe("Write in file error:" + e.getMessage());
                     return false;
                 }
             }
         } catch (IOException e) {
+            log.severe("IOException: " + e.getMessage());
             return false;
         }
         return true;
@@ -162,6 +175,7 @@ public class Fixer {
                     "Error: File 'DeathTime' doesn't exist.",
                     "File error",
                     JOptionPane.ERROR_MESSAGE);
+            log.severe("DeathTime doesn't exist");
             return false;
         }
         if(!new File(dataPath + "\\saveData").exists()){
@@ -169,6 +183,7 @@ public class Fixer {
                     "Error: File 'saveData' doesn't exist.",
                     "File error",
                     JOptionPane.ERROR_MESSAGE);
+            log.severe("saveData doesn't exist");
             return false;
         }
 
@@ -178,6 +193,7 @@ public class Fixer {
                     "Error: File 'DeathTime' doesn't exist.",
                     "File error",
                     JOptionPane.ERROR_MESSAGE);
+            log.severe("Can't move DeathTime to backup");
             return false;
         }
         if(!moveFileToBackup("saveData")){
@@ -185,6 +201,7 @@ public class Fixer {
                     "Error: Can't move 'saveData' file in backup directory.",
                     "Move error",
                     JOptionPane.ERROR_MESSAGE);
+            log.severe("Can't move saveData to backup");
             return false;
         }
         if(!moveFileToBackup("saveData2")){
@@ -192,19 +209,21 @@ public class Fixer {
                     "Can't move 'saveData2' file in backup directory.",
                     "Move warning",
                     JOptionPane.WARNING_MESSAGE);
+            log.warning("Can't move saveData2 to backup");
         }
         if(!moveFileToBackup("Config")){
-            //log
             JOptionPane.showMessageDialog(frame,
                     "Can't move 'Config' file in backup directory.",
                     "Move warning",
                     JOptionPane.WARNING_MESSAGE);
+            log.warning("Can't move Config to backup");
         }
         if(!moveFileToBackup("Snapshot.bmp")){
             JOptionPane.showMessageDialog(frame,
                     "Can't move 'Snapshot.bmp' file in backup directory.",
                     "Move warning",
                     JOptionPane.WARNING_MESSAGE);
+            log.warning("Can't move Snapshot.bmp to backup");
         }
         return true;
     }
@@ -215,14 +234,10 @@ public class Fixer {
         try {
             result = Files.move(Paths.get(from), Paths.get(to));
         } catch (IOException e) {
-            System.out.println("Exception while moving file: " + e.getMessage());
-        }
-        if(result == null){
+            log.severe("Can't move " + fileName + " to backup: " + e.getMessage());
             return false;
         }
-        else{
-            return true;
-        }
+        return true;
     }
 }
 

@@ -1,11 +1,19 @@
-package ru.fixer;
+package ru.fixer.frame;
+
+import ru.fixer.service.Fixer;
+import ru.fixer.util.MainFrameUtil;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.logging.Logger;
 
 public class MainFrame extends JFrame {
+    private static Logger log = Logger.getLogger(MainFrame.class.getName());
     public static final Integer WINDOW_HEIGHT = 440;
     public static final Integer WINDOW_WIDTH = 450;
     private JPanel textPanel;
@@ -15,9 +23,9 @@ public class MainFrame extends JFrame {
     private JButton fixButton;
     private JLabel fixLabel;
     private JButton exitButton;
-    private final Icon cross = new ImageIcon("png/crosspng.png");
-    private final Icon checkmark = new ImageIcon("png/checkmarkpng.png");
-    private final Image iconImage = new ImageIcon("png/kamiliaKey.png").getImage();
+    private final Icon crossImage = new ImageIcon(ClassLoader.getSystemResource("png/crosspng.png"));
+    private final Icon checkmarkImage = new ImageIcon(ClassLoader.getSystemResource("png/checkmarkpng.png"));
+    private final Image iconImage = new ImageIcon(ClassLoader.getSystemResource("png/kamiliaKey.png")).getImage();
     private final MainFrameUtil mainFrameUtil = new MainFrameUtil();
     private Fixer fixer;
     private final String baseDirectory = "C:\\";
@@ -26,9 +34,13 @@ public class MainFrame extends JFrame {
         Toolkit tk = Toolkit.getDefaultToolkit();
         baseInitForMainFrame();
 
+        //add menus
+        JMenuBar menuBar = mainFrameUtil.createJMenuBar(this);
+        setJMenuBar(menuBar);
+
         //create text panel
         textPanel = new JPanel();
-        textPanel.setPreferredSize(new Dimension(WINDOW_WIDTH * 9 / 10, WINDOW_HEIGHT / 2));
+        textPanel.setPreferredSize(new Dimension(WINDOW_WIDTH * 9 / 10, WINDOW_HEIGHT * 9/ 20));
         textPanel.add(mainFrameUtil.getTextPane(MainFrameUtil.Step.FIRST));
         textPanel.setBorder(mainFrameUtil.getStepBorder(MainFrameUtil.Step.FIRST));
         add(textPanel);
@@ -51,7 +63,7 @@ public class MainFrame extends JFrame {
                     JOptionPane.showMessageDialog(MainFrame.this,
                             "Choose correct Kamilia directory.",
                             "Wrong directory",
-                            JOptionPane.INFORMATION_MESSAGE);
+                            JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
@@ -65,16 +77,18 @@ public class MainFrame extends JFrame {
                             "Can't create 'backup' directory.",
                             "Directory error",
                             JOptionPane.ERROR_MESSAGE);
+                    log.severe("Can't create 'backup' directory.");
                     return;
                 }
 
                 //move wrong files
                 if(!fixer.moveKamiliaFilesInBackup(this)){
+                    log.severe("Can't move files in backup.");
                     return;
                 }
 
-                //show new button
-                kamiliaDirectoryChooseLabel.setIcon(checkmark);
+                //show new button and checkmark
+                kamiliaDirectoryChooseLabel.setIcon(checkmarkImage);
                 fixButton.setVisible(true);
                 fixLabel.setVisible(true);
 
@@ -98,7 +112,7 @@ public class MainFrame extends JFrame {
 
         //add icon for kamiliaDirectoryChooseBtn
         constr = mainFrameUtil.getGridBagConstrains(MainFrameUtil.ComponentName.KAMILIA_DIRECTORY_CHOOSE_LABEL);
-        kamiliaDirectoryChooseLabel = new JLabel(cross);
+        kamiliaDirectoryChooseLabel = new JLabel(crossImage);
         componentsPanel.add(kamiliaDirectoryChooseLabel, constr);
 
         //create invisible fix button
@@ -106,13 +120,15 @@ public class MainFrame extends JFrame {
         fixButton = new JButton("Fix");
         fixButton.addActionListener(e -> {
             if(!fixer.newFilesExist(MainFrame.this)){
+                log.severe("New files don't exist.");
                 return;
             }
             if(!fixer.fixAndMoveOldFiles(MainFrame.this)){
+                log.severe("Can't fix or move old files.");
                 return;
             }
 
-            fixLabel.setIcon(checkmark);
+            fixLabel.setIcon(checkmarkImage);
             exitButton.setVisible(true);
             textPanel.remove(0);
             textPanel.add(mainFrameUtil.getTextPane(MainFrameUtil.Step.THIRD));
@@ -123,7 +139,7 @@ public class MainFrame extends JFrame {
 
         //create invisible fix label
         constr = mainFrameUtil.getGridBagConstrains(MainFrameUtil.ComponentName.FIX_LABEL);
-        fixLabel = new JLabel(cross);
+        fixLabel = new JLabel(crossImage);
         fixLabel.setVisible(false);
         componentsPanel.add(fixLabel, constr);
 
@@ -134,22 +150,25 @@ public class MainFrame extends JFrame {
         exitButton.setVisible(false);
         componentsPanel.add(exitButton, constr);
 
-        componentsPanel.setPreferredSize(new Dimension(WINDOW_WIDTH * 9 / 10, WINDOW_HEIGHT * 2 / 5));
+        componentsPanel.setPreferredSize(new Dimension(WINDOW_WIDTH * 9 / 10, WINDOW_HEIGHT * 35 / 100));
         add(componentsPanel);
+
+
 
         setMainFrameBounds(tk);
     }
     private void baseInitForMainFrame(){
         try {
-            UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+            //UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+            UIManager.setLookAndFeel("com.formdev.flatlaf.FlatLightLaf");
         } catch (ClassNotFoundException | InstantiationException |
                  IllegalAccessException |
                  UnsupportedLookAndFeelException e) {
-            throw new RuntimeException(e);
+            log.severe("LookAndFeel error: " + e.getMessage());
         }
 
         setVisible(true);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setTitle("I wanna kill the Kamilia 3 Save Fixer");
         setIconImage(iconImage);
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
@@ -162,7 +181,5 @@ public class MainFrame extends JFrame {
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         setResizable(false);
     }
-
-
 }
 

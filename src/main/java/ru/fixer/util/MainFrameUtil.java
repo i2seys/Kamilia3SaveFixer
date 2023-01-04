@@ -1,15 +1,22 @@
-package ru.fixer;
+package ru.fixer.util;
+
+import ru.fixer.frame.MainFrame;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 import java.awt.*;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.logging.Logger;
 
-import static ru.fixer.MainFrame.WINDOW_HEIGHT;
-import static ru.fixer.MainFrame.WINDOW_WIDTH;
+import static ru.fixer.frame.MainFrame.WINDOW_HEIGHT;
+import static ru.fixer.frame.MainFrame.WINDOW_WIDTH;
 
 public class MainFrameUtil {
+    private static Logger log = Logger.getLogger(MainFrameUtil.class.getName());
     public enum Step{
         FIRST,
         SECOND,
@@ -33,9 +40,11 @@ public class MainFrameUtil {
                 title = "Step 2/3 - create empty saves.";
                 break;
             case THIRD:
-                title = "Step 3/3 - fix saves.";
+                title = "Step 3/3 - saves fixed.";
                 break;
-            default: throw new RuntimeException();
+            default:
+                log.severe("Wrong step border(can this error ever be thrown?...).");
+                return null;
         }
         return BorderFactory.createTitledBorder(title);
     }
@@ -66,10 +75,12 @@ public class MainFrameUtil {
                 };
                 break;
             default:
-                throw new RuntimeException();
+                log.severe("Wrong step border(can this error ever be thrown?...).");
+                return null;
         }
 
         JTextPane textPane = new JTextPane();
+        textPane.setEditable(false);
 
         //add init text
         StyledDocument doc = textPane.getStyledDocument();
@@ -78,14 +89,15 @@ public class MainFrameUtil {
                 doc.insertString(doc.getLength(), initString[i], null);
             }
         } catch (BadLocationException ble) {
-            ble.printStackTrace();
+            log.severe("BadLocationException while inserting text in Pane: " + ble.getMessage());
+            return null;
         }
 
         //add scroll
         JScrollPane paneScrollPane = new JScrollPane(textPane);
-
         //set prefered size
-        paneScrollPane.setPreferredSize(new Dimension(WINDOW_WIDTH * 19 / 20, WINDOW_HEIGHT * 9 / 21));
+        paneScrollPane.setPreferredSize(new Dimension(WINDOW_WIDTH * 19 / 20, WINDOW_HEIGHT * 9 / 25));
+        paneScrollPane.setWheelScrollingEnabled(true);
         return paneScrollPane;
     }
     public GridBagConstraints getGridBagConstrains(ComponentName componentName){
@@ -126,10 +138,48 @@ public class MainFrameUtil {
                 c.gridx = 1;
                 c.gridy = 2;
                 c.anchor = GridBagConstraints.PAGE_END;
-                c.insets = new Insets(0, 0, 45, 0);
+                c.insets = new Insets(15, 0, 30, 0);
                 break;
-            default: throw new RuntimeException();
+            default:
+                log.severe("Wrong component name(can this error ever be thrown?...).");
+                return null;
         }
         return c;
+    }
+    public JMenuBar createJMenuBar(JFrame frame){
+        Icon gitImage =  new ImageIcon(ClassLoader.getSystemResource("png/gitIcon.png"));
+        Icon readmeImage = new ImageIcon(ClassLoader.getSystemResource("png/readmeIcon.png"));
+
+        //create empty JMenuBar
+        JMenuBar menuBar = new JMenuBar();
+
+        //create menu "about"
+        JMenu aboutMenu = new JMenu("About");
+        JMenuItem githubRef = new JMenuItem("GitHub", gitImage);
+        githubRef.addActionListener(e -> {
+            String url = "https://github.com/i2seys/Kamilia3SaveFixer";
+            try {
+                Desktop desktop = Desktop.getDesktop();
+                desktop.browse(new URL(url).toURI());
+            }
+            catch (IOException | URISyntaxException ex){
+                log.warning("Can't automatically open GitHub reference: " + ex);
+                JOptionPane.showMessageDialog(frame,
+                        "Can't automatically open GitHub reference. Type in browser: \"github.com/i2seys/Kamilia3SaveFixer\".",
+                        "Open link error.",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+        });
+        aboutMenu.add(githubRef);
+
+        //create menu "help"
+        JMenu helpMenu = new JMenu("Help");
+        JMenuItem readme = new JMenuItem("Readme", readmeImage);
+        helpMenu.add(readme);
+
+        menuBar.add(aboutMenu);
+        menuBar.add(helpMenu);
+        return menuBar;
+
     }
 }
