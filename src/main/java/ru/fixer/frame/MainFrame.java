@@ -156,12 +156,12 @@ public class MainFrame extends JFrame {
     }
     private void baseInitForMainFrame(){
         try {
-            //UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-            UIManager.setLookAndFeel("com.formdev.flatlaf.FlatLightLaf");
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+            //UIManager.setLookAndFeel("com.formdev.flatlaf.FlatLightLaf");
         } catch (ClassNotFoundException | InstantiationException |
                  IllegalAccessException |
                  UnsupportedLookAndFeelException e) {
-            log.severe("LookAndFeel error: " + e.getMessage());
+            log.severe("LookAndFeel error: " + e);
         }
 
         setVisible(true);

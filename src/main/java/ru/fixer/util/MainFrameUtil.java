@@ -275,10 +275,12 @@ public class MainFrameUtil {
 
         Style regular = doc.addStyle("regular", def);
         StyleConstants.setFontFamily(def, "Nirmala UI");
+        StyleConstants.setFontSize(def, 12);
         /*"Cascadia Code",
         "Dialog",
         "Nirmala UI"*/
         Style bold = doc.addStyle("bold", regular);
         StyleConstants.setBold(bold, true);
+        StyleConstants.setFontSize(bold, 12);
     }
 }
