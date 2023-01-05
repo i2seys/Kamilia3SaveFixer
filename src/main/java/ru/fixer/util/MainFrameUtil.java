@@ -4,8 +4,8 @@ import ru.fixer.frame.MainFrame;
 
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.StyledDocument;
+import javax.swing.border.TitledBorder;
+import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,8 +15,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.logging.Logger;
 
-import static ru.fixer.frame.MainFrame.WINDOW_HEIGHT;
-import static ru.fixer.frame.MainFrame.WINDOW_WIDTH;
+import static ru.fixer.frame.MainFrame.*;
 
 public class MainFrameUtil {
     private static Logger log = Logger.getLogger(MainFrameUtil.class.getName());
@@ -49,32 +48,45 @@ public class MainFrameUtil {
                 log.severe("Wrong step border(can this error ever be thrown?...).");
                 return null;
         }
-        return BorderFactory.createTitledBorder(title);
+        TitledBorder b = BorderFactory.createTitledBorder(title);
+        return b;
     }
     public JScrollPane getTextPane(Step step){
         String[] initString = null;
+        String[] styles = null;
         switch (step){
             case FIRST:
                 initString = new String[]{
                         "To get started, go to the folder with Kamilia 3.\n",
-                        "In it, go to the \"Data\" folder. If your working saves are there, then move them to another location\n",
-                        "The \"Data\" folder must contain non-working saves with the progress you want to get.\n",
-                        "After you make sure that there are \"wrong\" save files in the Data folder - select the Kamilia directory.\n",
-                        "Files required for transfer: \"saveData\", \"DeathTime\"\n",
-                        "If there is no \"saveData2\" file in the \"Data\" folder, then you will not receive information about the crystals.\n",
-                        "If there is no \"Config\" file, the game will be on default settings."
+                        "In it, go to the \"Data\" folder. ","If your working saves are there, then move them to another location.\n",
+                        "The \"Data\" folder must contain non-working saves with the progress you want to get.\n\n",
+                        "After you make sure that there are \"wrong\" save files in the Data folder -", " click on the button and select the Kamilia directory.\n",
+                };
+                styles = new String[]{
+                        "regular",
+                        "regular", "bold",
+                        "regular",
+                        "regular", "bold"
                 };
                 break;
             case SECOND:
                 initString = new String[]{
-                        "Your incorrect saves have been moved to the \"Data\\backup(time)\" folder. ",
-                        "Now you need to enter the game, click \"Start game\" and exit the game. ",
+                        "Your incorrect saves have been moved to the", "\"Data\\backup(time)\"", " folder. \n",
+                        "Now you need to ", "enter the game, click \"Start game\" and exit the game. \n",
                         "After that click \"Fix\"."
+                };
+                styles = new String[]{
+                        "regular", "bold", "regular",
+                        "regular", "bold",
+                        "regular"
                 };
                 break;
             case THIRD:
                 initString = new String[]{
-                        "Your files have been fixed. The old wrong save files are in the backup folder."
+                        "Your files have been fixed. \nThe old wrong save files are in the backup folder."
+                };
+                styles = new String[]{
+                        "regular",
                 };
                 break;
             default:
@@ -87,9 +99,10 @@ public class MainFrameUtil {
 
         //add init text
         StyledDocument doc = textPane.getStyledDocument();
+        addStylesToDocument(doc);
         try {
             for (int i=0; i < initString.length; i++) {
-                doc.insertString(doc.getLength(), initString[i], null);
+                doc.insertString(doc.getLength(), initString[i], doc.getStyle(styles[i]));
             }
         } catch (BadLocationException ble) {
             log.severe("BadLocationException while inserting text in Pane: " + ble.getMessage());
@@ -99,8 +112,10 @@ public class MainFrameUtil {
         //add scroll
         JScrollPane paneScrollPane = new JScrollPane(textPane);
         //set prefered size
-        paneScrollPane.setPreferredSize(new Dimension(WINDOW_WIDTH * 19 / 20, WINDOW_HEIGHT * 9 / 25));
+        paneScrollPane.setPreferredSize(new Dimension(TEXT_WIDTH, TEXT_HEIGHT));
         paneScrollPane.setWheelScrollingEnabled(true);
+
+
         return paneScrollPane;
     }
     public GridBagConstraints getGridBagConstrains(ComponentName componentName){
@@ -178,30 +193,64 @@ public class MainFrameUtil {
 
         //create menu "help"
         JMenu helpMenu = new JMenu("Help");
-        JMenuItem readme = new JMenuItem("Readme", readmeImage);
-        readme.addActionListener(e -> {
-            //open README
-            File readmeFile = new File("README.txt");
-            if(!readmeFile.exists()){
-                log.info("Can't find README file.");
+
+        //create readme eng menu item
+        JMenuItem readmeEng = new JMenuItem("Readme(En)", readmeImage);
+        readmeEng.addActionListener(e -> {
+            //check for existence
+            File readmeFileEn = new File("README(English).txt");
+            if(!readmeFileEn.exists()){
+                log.info("Can't find README(English) file.");
                 JOptionPane.showMessageDialog(frame,
-                        "Can't find README file.\nYou can find it on GitHub: \"github.com/i2seys/Kamilia3SaveFixer\"",
+                        "Can't find README(English) file.\nYou can find it on GitHub: \"github.com/i2seys/Kamilia3SaveFixer\"",
                         "File not exist.",
                         JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
+
+            //open
             Desktop desktop = Desktop.getDesktop();
             try {
-                desktop.open(readmeFile);
+                desktop.open(readmeFileEn);
             } catch (IOException ex) {
-                log.info("Can't find README file.");
+                log.info("Can't open README file.");
                 JOptionPane.showMessageDialog(frame,
                         "Can't open README file.\nYou can find it in fixer folder or GitHub: \"github.com/i2seys/Kamilia3SaveFixer\"",
                         "File not exist.",
                         JOptionPane.INFORMATION_MESSAGE);
             }
         });
-        helpMenu.add(readme);
+        helpMenu.add(readmeEng);
+
+        //create readme rus menu item
+        JMenuItem readmeRus = new JMenuItem("Readme(Ru)", readmeImage);
+        readmeRus.addActionListener(e -> {
+            //check for existence
+            File readmeFileRus = new File("README(Russian).txt");
+            if(!readmeFileRus.exists()){
+                log.info("Can't find README(Russian) file.");
+                JOptionPane.showMessageDialog(frame,
+                        "Can't find README(Russian) file.\nYou can find it on GitHub: \"github.com/i2seys/Kamilia3SaveFixer\"",
+                        "File not exist.",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            //open
+            Desktop desktop = Desktop.getDesktop();
+            try {
+                desktop.open(readmeFileRus);
+            } catch (IOException ex) {
+                log.info("Can't open README file.");
+                JOptionPane.showMessageDialog(frame,
+                        "Can't open README file.\nYou can find it in fixer folder or GitHub: \"github.com/i2seys/Kamilia3SaveFixer\"",
+                        "File not exist.",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+        helpMenu.add(readmeRus);
+
+
         JMenuItem exit = new JMenuItem("Exit", exitImage);
         exit.addActionListener(e -> System.exit(0));
         helpMenu.add(exit);
@@ -214,9 +263,22 @@ public class MainFrameUtil {
     }
     public JPanel createTextPanel(){
         JPanel textPanel = new JPanel();
-        textPanel.setPreferredSize(new Dimension(WINDOW_WIDTH * 9 / 10, WINDOW_HEIGHT * 9/ 20));
-        textPanel.add(getTextPane(MainFrameUtil.Step.FIRST));
-        textPanel.setBorder(getStepBorder(MainFrameUtil.Step.FIRST));
+        textPanel.setPreferredSize(new Dimension(TEXT_PANEL_WIDTH, TEXT_PANEL_HEIGHT));
+        textPanel.add(getTextPane(Step.FIRST));
+        textPanel.setBorder(getStepBorder(Step.FIRST));
         return textPanel;
+    }
+    protected void addStylesToDocument(StyledDocument doc) {
+        //Initialize some styles.
+        Style def = StyleContext.getDefaultStyleContext().
+                getStyle(StyleContext.DEFAULT_STYLE);
+
+        Style regular = doc.addStyle("regular", def);
+        StyleConstants.setFontFamily(def, "Nirmala UI");
+        /*"Cascadia Code",
+        "Dialog",
+        "Nirmala UI"*/
+        Style bold = doc.addStyle("bold", regular);
+        StyleConstants.setBold(bold, true);
     }
 }

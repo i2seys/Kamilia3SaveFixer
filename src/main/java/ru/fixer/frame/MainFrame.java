@@ -5,17 +5,23 @@ import ru.fixer.util.MainFrameUtil;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Vector;
 import java.util.logging.Logger;
 
 public class MainFrame extends JFrame {
     private static Logger log = Logger.getLogger(MainFrame.class.getName());
     public static final Integer WINDOW_HEIGHT = 440;
     public static final Integer WINDOW_WIDTH = 450;
+    public static final Integer TEXT_PANEL_HEIGHT = WINDOW_HEIGHT * 9/ 20;
+    public static final Integer TEXT_PANEL_WIDTH = WINDOW_WIDTH * 9 / 10;
+    public static final Integer TEXT_HEIGHT = TEXT_PANEL_HEIGHT * 8 / 10;
+    public static final Integer TEXT_WIDTH = TEXT_PANEL_WIDTH ;
     private JPanel textPanel;
     private JPanel componentsPanel;
     private JButton kamiliaDirectoryChooseBtn;
@@ -44,6 +50,7 @@ public class MainFrame extends JFrame {
 
         //create buttons panel
         componentsPanel = new JPanel();
+
         componentsPanel.setLayout(new GridBagLayout());
         //create button for directory choosing
         GridBagConstraints constr = mainFrameUtil.getGridBagConstrains(MainFrameUtil.ComponentName.KAMILIA_DIRECTORY_CHOOSE_BTN);
@@ -144,6 +151,7 @@ public class MainFrame extends JFrame {
         componentsPanel.setPreferredSize(new Dimension(WINDOW_WIDTH * 9 / 10, WINDOW_HEIGHT * 35 / 100));
         add(componentsPanel);
 
+        pack();
         setMainFrameBounds(tk);
     }
     private void baseInitForMainFrame(){

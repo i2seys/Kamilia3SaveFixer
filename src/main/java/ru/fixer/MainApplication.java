@@ -3,6 +3,7 @@ package ru.fixer;
 import ru.fixer.frame.MainFrame;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 import java.util.logging.LogManager;
 

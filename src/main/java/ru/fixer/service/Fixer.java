@@ -77,7 +77,7 @@ public class Fixer {
                     "Error: new \"saveData2\" file doesn't exist. Check if the conditions written in the application are met",
                     "File error",
                     JOptionPane.ERROR_MESSAGE);
-            log.severe("saveData2 doesn't exist.");
+            log.warning("saveData2 doesn't exist.");
             return false;
         }
         if(!new File(dataPath + "\\DeathTime").exists()){
