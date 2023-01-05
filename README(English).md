@@ -8,7 +8,7 @@ You are solely responsible for your lost saves. **One more time - copy your save
 
 If you follow the instructions exactly, you will end up with working saves in the "Data" folder and a backup folder containing the same saves, but with the "wrong files" error.
 
-This program was inspired by this video: *https://www.youtube.com/watch?v=enJAE96bab4&t=158s*
+This program was inspired by this video: *https://www.youtube.com/watch?v=enJAE96bab4&*
 
 Link to github with source code: *https://github.com/i2seys/Kamilia3SaveFixer*
 
