@@ -19,3 +19,5 @@ If you find a bug, you can post it here: *https://github.com/i2seys/Kamilia3Save
 If something goes wrong, you can find the **k3_fixer_log.txt** file in the program folder. It contains data about the latest program errors.
 
 Special thanks to my friend Misha for help in developing the program.
+
+EXE file reference: https://disk.yandex.ru/d/wDoD2JV4adNjqw
