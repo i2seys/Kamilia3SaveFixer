@@ -2,7 +2,7 @@
 
 This program solves the **"wrong savefile"** error that occurs when running ***I Wanna kill the Kamilia 3 or its EZ version.***
 
-**Before you start, it is highly recommended to make a backup of your important saves, even though the program only deletes files with empty saves.**
+**Before you start, it is highly recommended to make a backup of your important K3 saves, even though the program only deletes files with empty saves.**
 
 You are solely responsible for your lost saves. **One more time - copy your saves.**
 
