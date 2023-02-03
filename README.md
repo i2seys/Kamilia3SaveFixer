@@ -20,4 +20,4 @@ If something goes wrong, you can find the **k3_fixer_log.txt** file in the progr
 
 Special thanks to my friend Misha for help in developing the program.
 
-EXE file reference: https://disk.yandex.ru/d/wDoD2JV4adNjqw
+EXE file reference: https://disk.yandex.ru/d/GZ1OEILRwWA1ig
