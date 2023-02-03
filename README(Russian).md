@@ -19,4 +19,4 @@ Telegram для обратной связи: *https://t.me/i2seys*
 
 Отдельное спасибо моему другу Мише за помощь в разработке программы.
 
-Ссылка на EXE: https://disk.yandex.ru/d/wDoD2JV4adNjqw
+Ссылка на EXE: https://disk.yandex.ru/d/GZ1OEILRwWA1ig
